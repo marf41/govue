@@ -24,7 +24,7 @@ func (a asset) init() asset {
 
 func (a asset) importPath() string {
 	// filled at code gen time
-	return "m.arf.ovh/u/marf/go/amalus/govue"
+	return "github.com/marf41/GoVue"
 }
 
 func (a asset) Open() (*os.File, error) {

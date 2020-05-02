@@ -24,8 +24,8 @@ import (
 
 	"github.com/spf13/afero"
 
-    "github.com/marf41/GoVue/roboto"
-    "github.com/marf41/GoVue/vue"
+	"github.com/marf41/GoVue/roboto"
+	"github.com/marf41/GoVue/vue"
 )
 
 const uid = "216672ef-bf07-400f-9eb7-9dcac1a2de0d"
@@ -125,20 +125,21 @@ type vueData struct {
 
 // Vue settings struct
 type Vue struct {
-	Lang       string
-	Title      string
-	User       string
-	Auth       func(w http.ResponseWriter, r *http.Request) bool
-	Scripts    []string
-	Styles     []string
-	Data       interface{}
-	Router     *mux.Router
-	Index      resource.Index
-	Schemas    map[string]Schema
-	DB         string
-	Debug      bool
-	FS         http.FileSystem
-	Components map[string]*vueComponent
+	Lang             string
+	Title            string
+	User             string
+	Auth             func(w http.ResponseWriter, r *http.Request) bool
+	Scripts          []string
+	Styles           []string
+	Data             interface{}
+	Router           *mux.Router
+	Index            resource.Index
+	Schemas          map[string]Schema
+	DB               string
+	Debug            bool
+	FS               http.FileSystem
+	Components       map[string]*vueComponent
+	parsedComponents []vueParsedComponent
 }
 
 // NewVue creates new `Vue` instance
@@ -215,12 +216,12 @@ func (v *Vue) Handlers(r *mux.Router) {
 }
 
 // AddComponent adds new Vue component
-func (v *Vue) AddComponent(name, template, script string) {
+func (v *Vue) AddComponent(name, template string, script ...string) {
 	// log.Printf("Adding component %q.\n", name)
 	if v.Components == nil {
 		v.Components = make(map[string]*vueComponent)
 	}
-	v.Components[name] = &vueComponent{name, template, script}
+	v.Components[name] = &vueComponent{name, template, strings.Join(script, "\n")}
 	// v.CheckComponents()
 }
 
@@ -266,6 +267,30 @@ func (v Vue) handler() http.HandlerFunc {
 	if ferr("TC", err) {
 		return nil
 	}
+
+	v.parsedComponents = []vueParsedComponent{}
+	sb := "\n\t<script id=%q type=%q>\n"
+	se := "\t</script>"
+	for name, component := range v.Components {
+		if v.Debug {
+			log.Printf("Registering component: %q.\n", name)
+		}
+		n := "tmp-" + name
+		sbx := fmt.Sprintf(sb, n, "text/x-template")
+		sbs := fmt.Sprintf(sb, "js-"+n, "application/javascript")
+		cc := amber.New()
+		cc.Parse(strings.TrimSpace(component.Template))
+		ct, err := cc.CompileString()
+		if !logerr("VUEC", err) {
+			// log.Printf("Component %q:\n%q\n.", name, component.Template)
+			ct = strings.Join(strings.Split(ct, "\n"), "\t\t\n")
+			cs := fmt.Sprintf("\tVue.component(%q, { template: %q, %s })\n",
+				"v-"+name, "#"+n, component.Script)
+			cmp := vueParsedComponent{n, sbx + ct + se, sbs + cs + se}
+			v.parsedComponents = append(v.parsedComponents, cmp)
+		}
+	}
+	// log.Printf("%d components registered.", len(data.Components))
 	return func(w http.ResponseWriter, r *http.Request) {
 		if v.Auth != nil {
 			log.Println("Checking auth...")
@@ -297,29 +322,7 @@ func (v Vue) handler() http.HandlerFunc {
 		}
 		data.Scripts = append(data.Scripts, uid+"vuescript.js")
 
-		data.Components = []vueParsedComponent{}
-		sb := "\n<script id=%q type=%q>\n"
-		se := "</script>"
-		for name, component := range v.Components {
-			if v.Debug {
-				log.Printf("Registering component: %q.\n", name)
-			}
-			n := "tmp-" + name
-			sbx := fmt.Sprintf(sb, n, "text/x-template")
-			sbs := fmt.Sprintf(sb, "js-"+n, "application/javascript")
-			cc := amber.New()
-			cc.Parse(strings.TrimSpace(component.Template))
-			ct, err := cc.CompileString()
-			if !logerr("VUEC", err) {
-				log.Printf("Component %q:\n%q\n.", name, component.Template)
-				ct = strings.Join(strings.Split(ct, "\n"), "\t\t\n")
-				cs := fmt.Sprintf("Vue.component(%q, { template: %q, %s })\n",
-					"v-" + name, "#" + n, component.Script)
-				cmp := vueParsedComponent{n, sbx + ct + se, sbs + cs + se}
-				data.Components = append(data.Components, cmp)
-			}
-		}
-		// log.Printf("%d components registered.", len(data.Components))
+		data.Components = v.parsedComponents
 		err = tpl.Execute(w, data)
 		if werr(err, w) {
 			return

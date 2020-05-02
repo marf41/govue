@@ -21,14 +21,14 @@ html[lang=Lang]
           | No app defined
         v-snack[ref="snack"]
         v-footer-cmp[ref="footer"]
-      
-    block 216672ef-bf07-400f-9eb7-9dcac1a2de0dcomponents
-    block components
 
     script
       var user = #{ $.User }
     script[src="/vue.js"]
     script[src="/vuetify.js"]
+
+    block 216672ef-bf07-400f-9eb7-9dcac1a2de0dcomponents
+    block components
 
     each $url in $.Scripts
       script[src="/" + $url]
