@@ -2,9 +2,9 @@
 
 # GoVue
 
+Framework for embedding Vue.js SPA in single Go binary.
 
-
-Uses:
+## Uses
 
 - [becky](https://github.com/tv42/becky) for assets embedding,
 - [afero](https://github.com/spf13/afero) for virtual filesystem,
@@ -12,9 +12,9 @@ Uses:
 - [gorilla's mux](https://github.com/gorilla/mux) for routing,
 - [rest-layer](https://github.com/rs/rest-layer) for REST queries (WIP),
 
-# Usage
+## Usage
 
-Add to your file (adapt `sh` command when running in Windows):
+Add to your `.go` file (adapt `sh` command when running in Windows):
 
 ```golang
 //go:generate go build github.com/tv42/becky↵
