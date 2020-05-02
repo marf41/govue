@@ -1,0 +1,11 @@
+each $cmp in $.Components
+  #{ unescaped($.Template) }
+  #{ unescaped($.Script) }
+
+// script#tmp-footer[type="text/x-template"]
+    span.text-xs-right[:v-html="value"]
+
+// script#tmp-snack[type="text/x-template"]
+  v-snackbar[v-model="shw"][:timeout="timeout"][:color="color"]
+    span[v-html="text"]
+    v-btn[text=""][@click="shw=false"][v-text="close"]

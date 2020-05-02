@@ -1,0 +1,32 @@
+= doctype html
+html[lang=Lang]
+  head
+    title $.Title
+    meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    link rel="stylesheet" href="/materialdesignicons.min.css"
+    link rel="stylesheet" href="/vuetify.min.css"
+    link rel="stylesheet" href="/roboto.css"
+    link rel="stylesheet" href="/mdi.css"
+    link rel="stylesheet" href="/MarqueeText.css"
+    each $url in $.Styles
+      link[rel="stylesheet"][href="/"+$url]
+    yield head
+  body
+    yield body
+    div#app
+      v-app
+        yield app
+        v-snack ref="snack"
+        v-footer-cmp ref="footer"
+      
+    yield components
+
+    script
+      var user = ${ .User }
+    script src="/vue.js"
+    script src="/vuetify.js"
+
+    each $url in $.Scripts
+      script[src="/" + $url]
+
+    yield scripts

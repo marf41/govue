@@ -1,0 +1,36 @@
+doctype html
+html[lang=Lang]
+  head
+    title #{$.Title}
+    meta[name="viewport"]
+      [content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"]
+    link[rel="stylesheet"][href="/materialdesignicons.min.css"]
+    link[rel="stylesheet"][href="/vuetify.min.css"]
+    link[rel="stylesheet"][href="/roboto.css"]
+    link[rel="stylesheet"][href="/mdi.css"]
+    link[rel="stylesheet"][href="/MarqueeText.css"]
+    each $url in $.Styles
+      link[rel="stylesheet"][href="/"+$url]
+    block head
+  body
+    block body
+    div#app
+      v-app
+        block 216672ef-bf07-400f-9eb7-9dcac1a2de0dapp
+        block app
+          | No app defined
+        v-snack[ref="snack"]
+        v-footer-cmp[ref="footer"]
+      
+    block 216672ef-bf07-400f-9eb7-9dcac1a2de0dcomponents
+    block components
+
+    script
+      var user = #{ $.User }
+    script[src="/vue.js"]
+    script[src="/vuetify.js"]
+
+    each $url in $.Scripts
+      script[src="/" + $url]
+
+    block scripts
