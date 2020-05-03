@@ -125,21 +125,22 @@ type vueData struct {
 
 // Vue settings struct
 type Vue struct {
-	Lang             string
-	Title            string
-	User             string
-	Auth             func(w http.ResponseWriter, r *http.Request) bool
-	Scripts          []string
-	Styles           []string
-	Data             interface{}
-	Router           *mux.Router
-	Index            resource.Index
-	Schemas          map[string]Schema
-	DB               string
-	Debug            bool
-	FS               http.FileSystem
-	Components       map[string]*vueComponent
-	parsedComponents []vueParsedComponent
+	Lang               string
+	Title              string
+	User               string
+	Auth               func(w http.ResponseWriter, r *http.Request) bool
+	Scripts            []string
+	Styles             []string
+	Data               interface{}
+	Router             *mux.Router
+	Index              resource.Index
+	Schemas            map[string]Schema
+	DB                 string
+	Debug              bool
+	FS                 http.FileSystem
+	Components         map[string]*vueComponent
+	parsedComponents   []vueParsedComponent
+	hasEditorFieldType map[vueFieldType]bool
 }
 
 // NewVue creates new `Vue` instance

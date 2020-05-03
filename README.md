@@ -24,14 +24,22 @@ Add to your `.go` file (adapt `sh` command when running in Windows):
 Import library:
 
 ```golang
-import "github.com/marf41/GoVue"
+import "github.com/marf41/govue"
 ```
 
 Create new instance:
 
 ```golang
-var vue GoVue.Vue
+var vue govue.Vue
 ```
+
+Add wrapper for imported assets:
+
+```golang
+func Wrap(a asset) bool { return govue.Wrap(a.Name, a.Content, a.etag) }
+```
+
+---
 
 Minimal `main`:
 
